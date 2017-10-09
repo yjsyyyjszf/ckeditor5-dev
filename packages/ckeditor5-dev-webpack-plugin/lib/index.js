@@ -6,6 +6,7 @@
 'use strict';
 
 const replaceTCalls = require( './replacetcalls' );
+const addStripTextualPartOfErrorLoader = require( 'addstriptextualpartoferrorloader' );
 
 module.exports = class CKEditorWebpackPlugin {
 	/**
@@ -19,6 +20,8 @@ module.exports = class CKEditorWebpackPlugin {
 
 	apply( compiler ) {
 		const { languages } = this.options;
+
+		addStripTextualPartOfErrorLoader( compiler );
 
 		if ( languages && languages.length == 1 ) {
 			replaceTCalls( compiler, languages[ 0 ] );
