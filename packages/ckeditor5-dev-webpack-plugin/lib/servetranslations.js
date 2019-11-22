@@ -10,6 +10,7 @@ const rimraf = require( 'rimraf' );
 const fs = require( 'fs' );
 const path = require( 'path' );
 const { RawSource, ConcatSource } = require( 'webpack-sources' );
+const NormalModule = require( 'webpack/lib/NormalModule.js' );
 
 /**
  * Serve translations depending on the used translation service and passed options.
@@ -74,7 +75,7 @@ module.exports = function serveTranslations( compiler, options, translationServi
 
 	// Load translation files and add a loader if the package match requirements.
 	compiler.hooks.compilation.tap( 'CKEditor5Plugin', compilation => {
-		compilation.hooks.normalModuleLoader.tap( 'CKEditor5Plugin', ( context, module ) => {
+		NormalModule.getCompilationHooks( compilation ).loader.tap( 'CKEditor5Plugin', ( context, module ) => {
 			const pathToPackage = envUtils.getPathToPackage( cwd, module.resource );
 			module.loaders = envUtils.getLoaders( cwd, module.resource, module.loaders, { translateSource } );
 
@@ -91,7 +92,7 @@ module.exports = function serveTranslations( compiler, options, translationServi
 				compilationAssets: compilation.assets
 			} );
 
-			const allFiles = chunks.reduce( ( acc, chunk ) => [ ...acc, ...chunk.files ], [] );
+			const allFiles = [ ...chunks ].reduce( ( acc, chunk ) => [ ...acc, ...chunk.files ], [] );
 
 			for ( const asset of generatedAssets ) {
 				if ( asset.shouldConcat ) {
